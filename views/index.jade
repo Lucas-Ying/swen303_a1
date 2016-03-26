@@ -1,0 +1,45 @@
+//extends layout
+//
+//block content
+//    h1= title
+//    p Welcome to #{title}
+
+extends ../node_modules/jade-bootstrap/_bootstrap
+
+append styles
+    link(rel="stylesheet", href="/stylesheets/style.css")
+
+block body
+    +navbar("Colenso", "dropdown_menu")
+        +nav_item("/", "active") Home
+        form.navbar-form.navbar-left(action="/search", method="get")
+            .form-group
+                input.form-control(type='text', placeholder='Search', name='searchString')
+            button.btn.btn-default(type='submit') Submit
+    .container
+        h1= title
+
+    .container
+        -if (isHome == true){
+            p| Welcome to #{title}. We have an Excellent collection of videos in stock for you.
+             | We are based in !{place}.
+        -}
+
+    .container
+        -if (search_result == ''){
+            p| This is the #{title} page. Please search something to display the result.
+        -}
+
+    .container
+        -if (search_result !== undefined){
+            ul
+                each result in search_result
+                    li
+                        a(href= 'letters/' + result.id) #{result.title}
+        -}
+
+    .container
+        -if (isDisplay !== undefined){
+            +panel-info(info.title)
+                p !{letter}.
+        -}
