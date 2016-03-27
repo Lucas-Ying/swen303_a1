@@ -26,9 +26,8 @@ router.get ( '/', function ( req, res) {
 router.get ( '/search', function (req, res) {
     var inputString = req.query.searchString;
     if (inputString !== undefined) {
-        inputString = inputString.replace(inputString, "'" + inputString + "'");
         console.log(inputString);
-        var search_query = tei + "//TEI[. contains text " + inputString + "]";
+        var search_query = tei + "//TEI[. contains text '" + inputString + "']";
         client.execute(search_query, function (error, result) {
             if (error) {
                 console.error(error);
@@ -43,12 +42,25 @@ router.get ( '/search', function (req, res) {
                         author: doc_data(elem).find('author').first().text()
                     }
                 });
-                res.render('index', {title: 'Result', search_result: xmls});
+                res.render('search', {title: 'Search', search_result: xmls});
             }
         });
     } else {
-        res.render('index', {title: 'Search'});
+        res.render('search', {title: 'Search'});
     }
+} );
+
+/* GET browse page. */
+router.get ( '/browse', function ( req, res) {
+    client.execute ( tei + "for $n in (collection('Colenso/')//TEI)" +
+        "return db:path($n)", function ( error, result ) {
+        if ( error ) {
+            console.error ( error );
+        } else {
+            console.log(result.result);
+            res.render ( 'browse', {title: 'Browse', paths: result.result.split('\n'), isBrowse: true } );
+        }
+    } );
 } );
 
 /* GET content display page. */
@@ -68,7 +80,7 @@ router.get ( '/letters/:id', function (req, res) {
                 title: parsed_data.find('title').first().text(),
                 author: parsed_data.find('author').first().text()
             }
-            res.render ( 'index', {title: 'Display', letter: result.result, info: info, isDisplay: isDisplay } );
+            res.render ( 'display', {title: 'Display', letter: result.result, info: info, isDisplay: isDisplay } );
         }
     } );
 } );

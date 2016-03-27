@@ -1,0 +1,17 @@
+//Created by lucas on 28/03/16.
+
+extends layout
+
+block content
+    .container
+        -if (search_result == ''){
+        p| This is the #{title} page. Please search something to display the result.
+        -}
+
+    .container
+        -if (search_result !== undefined){
+        ul
+            each result in search_result
+                li
+                    a(href= 'letters/' + result.id) #{result.title}
+        -}
