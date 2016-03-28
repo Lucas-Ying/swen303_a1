@@ -24,25 +24,28 @@ router.get ( '/', function ( req, res) {
 
 /* GET search result list page. */
 router.get ( '/search', function (req, res) {
-    var inputString = req.query.searchString;
-    if (inputString !== undefined) {
-        console.log(inputString);
-        var search_query = tei + "//TEI[. contains text '" + inputString + "']";
-        client.execute(search_query, function (error, result) {
+    var search = req.query.searchString;
+    if (search !== undefined) {
+        search = "'" + search + "'";
+        console.log(search);
+        var query = tei +
+            "for $n in (//TEI[. contains text" + search + "])\n" +
+            "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
+        client.execute(query, function (error, result) {
             if (error) {
                 console.error(error);
             } else {
-                var doc_data = cheerio.load(result.result, {xmlMode: true});
-                var parsed_data = doc_data('TEI');
-                var xmls = [];
-                parsed_data.each(function (i, elem) {
-                    xmls[i] = {
-                        id: doc_data(elem).attr('xml:id'),
-                        title: doc_data(elem).find('title').first().text(),
-                        author: doc_data(elem).find('author').first().text()
+                //var results = result.result.split('\n');
+                var results = [];
+                $ = cheerio.load(result.result, {xmlMode: true});
+                $('result').each(function(i, elem){
+                    results[i] = {
+                        path: $(elem).find('path').first().text(),
+                        title: $(elem).find('title').first().text(),
+                        size: $(elem).find('size').first().text(),
                     }
                 });
-                res.render('search', {title: 'Search', search_result: xmls});
+                res.render('search', {title: 'Search', results: results});
             }
         });
     } else {
@@ -52,38 +55,45 @@ router.get ( '/search', function (req, res) {
 
 /* GET browse page. */
 router.get ( '/browse', function ( req, res) {
-    client.execute ( tei + "for $n in (collection('Colenso/')//TEI)" +
-        "return db:path($n)", function ( error, result ) {
+    var query = tei +
+        "for $n in (//TEI)\n" +
+        "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
+    client.execute(query, function (error, result) {
         if ( error ) {
             console.error ( error );
         } else {
-            console.log(result.result);
-            res.render ( 'browse', {title: 'Browse', paths: result.result.split('\n'), isBrowse: true } );
+            var results = [];
+            $ = cheerio.load(result.result, {xmlMode: true});
+            $('result').each(function(i, elem){
+                results[i] = {
+                    path: $(elem).find('path').first().text(),
+                    title: $(elem).find('title').first().text(),
+                    size: $(elem).find('size').first().text(),
+                }
+            });
+            res.render('browse', {title: 'Browse', results: results});
         }
     } );
 } );
 
 /* GET content display page. */
-router.get ( '/letters/:id', function (req, res) {
-    var isDisplay;
-    var id = req.params.id;
-    var display_query = tei + '//TEI[@xml:id="' + id + '"]';
-    client.execute ( display_query, function ( error, result ) {
+router.get ( '/file/*', function (req, res) {
+    var path = req.originalUrl.replace('/file/','');
+    var query = "XQUERY doc('Colenso/"+ path + "')";
+    client.execute ( query, function ( error, result ) {
         if ( error ) {
             console.error ( error );
         } else {
-            isDisplay = true;
             var doc_data = cheerio.load(result.result, {xmlMode: true});
             var parsed_data = doc_data('TEI');
             var info = {
                 id: parsed_data.attr('xml:id'),
                 title: parsed_data.find('title').first().text(),
                 author: parsed_data.find('author').first().text()
-            }
-            res.render ( 'display', {title: 'Display', letter: result.result, info: info, isDisplay: isDisplay } );
+            };
+            res.render ( 'display', {title: 'Display', letter: result.result, info: info} );
         }
     } );
 } );
-
 
 module.exports = router;

@@ -4,5 +4,18 @@ extends layout
 
 block content
     .container
-        each path in paths
-            a(href= 'letters/' + path) #{path}
+        if results == ''
+            p| This is the #{title} page. Please search something to display the result.
+
+    .container
+        if results !== undefined
+            each result in results
+                p
+                    a(href= 'file/' + result.path) #{result.title}
+                    | (
+                    -var size = result.size/1024
+                    if size < 1024
+                        | !{size.toFixed(2)} KB)
+                    else
+                        -size = size/1024
+                        | !{size.toFixed(2)} MB)

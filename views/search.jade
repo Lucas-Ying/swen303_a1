@@ -4,14 +4,18 @@ extends layout
 
 block content
     .container
-        -if (search_result == ''){
-        p| This is the #{title} page. Please search something to display the result.
-        -}
+        if results == ''
+            p| This is the #{title} page. Please search something to display the result.
 
     .container
-        -if (search_result !== undefined){
-        ul
-            each result in search_result
-                li
-                    a(href= 'letters/' + result.id) #{result.title}
-        -}
+        if results !== undefined
+            each result in results
+                p
+                    a(href= 'file/' + result.path) #{result.title}
+                    | (
+                    -var size = result.size/1024
+                    if size < 1024
+                        |!{size.toFixed(2)} KB)
+                    else
+                        -size = size/1024
+                        |!{size.toFixed(2)} MB)
