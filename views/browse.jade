@@ -4,6 +4,14 @@ extends layout
 
 block content
     .container
+        ol.breadcrumb
+            -var directory = '';
+            -for (var i = 0; i < original_dir.length; i++){
+                -directory = directory + original_dir[i] + '/';
+                li
+                    a(href='/' + directory + 'browse') #{original_dir[i]}
+            -}
+            li.active Directory
         if depth > 2 && count > 0
             span.label.label-primary #{count} found
             each result in results

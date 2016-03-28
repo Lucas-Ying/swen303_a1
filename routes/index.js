@@ -56,8 +56,8 @@ router.get ( '/search', function (req, res) {
 
 /* GET browse page. */
 router.get ( '*/browse', function ( req, res) {
-    var original_path = req.originalUrl.replace('/','').replace('/browse', '').split('/');
-    var depth = original_path.length;
+    var original_dir = req.originalUrl.replace('/','').replace('/browse', '').split('/');
+    var depth = original_dir.length;
     var query = tei +
         "for $n in (//TEI)\n" +
         "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
@@ -78,7 +78,7 @@ router.get ( '*/browse', function ( req, res) {
                     var original_p = '';
                     var path_d = '';
                     for (var i = 0; i < depth-1; i++){
-                        original_p = original_p + original_path[i+1] + '/';
+                        original_p = original_p + original_dir[i+1] + '/';
                     }
                     for (var i = 0; i < depth-1; i++){
                         path_d = path_d + path_directories[i] + '/';
@@ -123,7 +123,7 @@ router.get ( '*/browse', function ( req, res) {
                     }
                 });
             }
-            res.render('browse', {title: 'Browse', results: results, count: count, subdirectories: subdirectories, depth: depth});
+            res.render('browse', {title: 'Browse', results: results, count: count, subdirectories: subdirectories, depth: depth, original_dir: original_dir});
         }
     } );
 } );
