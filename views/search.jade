@@ -4,18 +4,17 @@ extends layout
 
 block content
     .container
-        if results == ''
-            p| This is the #{title} page. Please search something to display the result.
-
-    .container
-        if results !== undefined
+        if count > 0
+            span.label.label-primary #{count} found
             each result in results
                 p
-                    a(href= 'file/' + result.path) #{result.title}
+                    a(href='/Colenso/' + result.path + '/display') #{result.title} 
                     | (
                     -var size = result.size/1024
                     if size < 1024
-                        |!{size.toFixed(2)} KB)
+                        | !{size.toFixed(2)} KB)
                     else
                         -size = size/1024
-                        |!{size.toFixed(2)} MB)
+                        | !{size.toFixed(2)} MB)
+        else
+            span.label.label-warning #{count} found

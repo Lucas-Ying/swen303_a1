@@ -4,14 +4,11 @@ extends layout
 
 block content
     .container
-        if results == ''
-            p| This is the #{title} page. Please search something to display the result.
-
-    .container
-        if results !== undefined
+        if depth > 2 && count > 0
+            span.label.label-primary #{count} found
             each result in results
                 p
-                    a(href= 'file/' + result.path) #{result.title}
+                    a(href='/Colenso/' + result.path + '/display') #{result.title}
                     | (
                     -var size = result.size/1024
                     if size < 1024
@@ -19,3 +16,11 @@ block content
                     else
                         -size = size/1024
                         | !{size.toFixed(2)} MB)
+        else if depth > 0 && count > 0
+            span.label.label-primary #{count} found
+            each subdirectory in subdirectories
+                p
+                    -var showing = subdirectory.split('/')[subdirectory.split('/').length - 1];
+                    a(href='/Colenso/' + subdirectory + '/browse') #{showing}
+        else
+            span.label.label-warning #{count} found

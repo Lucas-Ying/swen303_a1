@@ -35,17 +35,18 @@ router.get ( '/search', function (req, res) {
             if (error) {
                 console.error(error);
             } else {
-                //var results = result.result.split('\n');
                 var results = [];
+                var count = 0;
                 $ = cheerio.load(result.result, {xmlMode: true});
                 $('result').each(function(i, elem){
+                    count++;
                     results[i] = {
                         path: $(elem).find('path').first().text(),
                         title: $(elem).find('title').first().text(),
                         size: $(elem).find('size').first().text(),
                     }
                 });
-                res.render('search', {title: 'Search', results: results});
+                res.render('search', {title: 'Search', results: results, count: count});
             }
         });
     } else {
@@ -54,7 +55,9 @@ router.get ( '/search', function (req, res) {
 } );
 
 /* GET browse page. */
-router.get ( '/browse', function ( req, res) {
+router.get ( '*/browse', function ( req, res) {
+    var original_path = req.originalUrl.replace('/','').replace('/browse', '').split('/');
+    var depth = original_path.length;
     var query = tei +
         "for $n in (//TEI)\n" +
         "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
@@ -63,23 +66,72 @@ router.get ( '/browse', function ( req, res) {
             console.error ( error );
         } else {
             var results = [];
-            $ = cheerio.load(result.result, {xmlMode: true});
-            $('result').each(function(i, elem){
-                results[i] = {
-                    path: $(elem).find('path').first().text(),
-                    title: $(elem).find('title').first().text(),
-                    size: $(elem).find('size').first().text(),
-                }
-            });
-            res.render('browse', {title: 'Browse', results: results});
+            var count = 0;
+            var subdirectories = [];
+            var isPush;
+            if (depth > 1) {
+                $ = cheerio.load(result.result, {xmlMode: true});
+                $('result').each(function (i, elem) {
+                    isPush = true;
+                    var path = $(elem).find('path').first().text();
+                    var path_directories = path.split('/');
+                    var original_p = '';
+                    var path_d = '';
+                    for (var i = 0; i < depth-1; i++){
+                        original_p = original_p + original_path[i+1] + '/';
+                    }
+                    for (var i = 0; i < depth-1; i++){
+                        path_d = path_d + path_directories[i] + '/';
+                    }
+                    if (original_p == path_d) {
+                        for (var i = 0; i < subdirectories.length; i++) {
+                            if (subdirectories[i] == path_d + path_directories[depth - 1]) {
+                                isPush = false;
+                            }
+                        }
+                        if (isPush) {
+                            subdirectories.push(path_d + path_directories[depth - 1]);
+                            count++;
+                        }
+                        results[i] = {
+                            path: path,
+                            title: $(elem).find('title').first().text(),
+                            size: $(elem).find('size').first().text()
+                        }
+                    }
+                });
+            } else {
+                $ = cheerio.load(result.result, {xmlMode: true});
+                $('result').each(function (i, elem) {
+                    isPush = true;
+                    var path = $(elem).find('path').first().text();
+                    var path_directories = path.split('/');
+                    console.log(path_directories);
+                    for (var i = 0; i < subdirectories.length; i++) {
+                        if (subdirectories[i] == path_directories[0]) {
+                            isPush = false;
+                        }
+                    }
+                    if (isPush) {
+                        subdirectories.push(path_directories[0]);
+                        count++;
+                    }
+                    results[i] = {
+                        path: path,
+                        title: $(elem).find('title').first().text(),
+                        size: $(elem).find('size').first().text()
+                    }
+                });
+            }
+            res.render('browse', {title: 'Browse', results: results, count: count, subdirectories: subdirectories, depth: depth});
         }
     } );
 } );
 
-/* GET content display page. */
-router.get ( '/file/*', function (req, res) {
-    var path = req.originalUrl.replace('/file/','');
-    var query = "XQUERY doc('Colenso/"+ path + "')";
+/* GET content browse, display page. */
+router.get ( '*/display', function (req, res) {
+    var path = req.originalUrl.replace('/','').replace('/display', '');
+    var query = "XQUERY doc('"+ path + "')";
     client.execute ( query, function ( error, result ) {
         if ( error ) {
             console.error ( error );
