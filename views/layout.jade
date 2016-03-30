@@ -22,21 +22,11 @@ block body
                     a(href='/Colenso/browse') Browse
                 li(id="upload")
                     a(href='/upload') Upload
-            form.navbar-form.navbar-right(action="/search", method="get", id="searchForm")
+            form.navbar-form.navbar-right(action="/search", method="get", id="navbarForm")
                 .form-group
                     input.form-control(type='text', placeholder='Search', name='searchString')
-                button.btn-navbar(type='submit', onclick="searchByText()") Search by Text
-                button.btn-navbar(type='submit', onclick="searchByQuery()") Search by xQuery
+                button.btn-navbar(type='submit') Search
 
     block content
-
-script.
-    function searchByText() {
-        document.getElementById("searchForm").action = "/search";
-    }
-
-    function searchByQuery() {
-        document.getElementById("searchForm").action = "/searchQuery";
-    }
 
 // basex/bin/basexserver -d -c"CREATE DATABASE Colenso ./Colenso"

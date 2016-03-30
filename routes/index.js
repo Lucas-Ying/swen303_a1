@@ -45,7 +45,7 @@ router.get ( '/', function ( req, res) {
 
 router.get ( '/search', function (req, res) {
     var search = req.query.searchString;
-    if (search !== undefined) {
+    if (search !== undefined && search.split('')[0] !== '/') {
         search = search
             .replace(/\s*&\s*/, "' ftand '")
             .replace(/\s*\|\s*/, "' ftor '")
@@ -54,6 +54,7 @@ router.get ( '/search', function (req, res) {
             .replace(" NOT ", "' ftnot '")
             .replace(" OR ", "' ftor '");
         search = "'" + search + "'";
+        console.log(search);
         var query = tei +
             "for $n in (//TEI[. contains text " + search + " using wildcards])\n" +
             "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
@@ -64,7 +65,7 @@ router.get ( '/search', function (req, res) {
                 var results = [];
                 var count = 0;
                 $ = cheerio.load(result.result, {xmlMode: true});
-                $('result').each(function(i, elem){
+                $('result').each(function (i, elem) {
                     count++;
                     results[i] = {
                         path: $(elem).find('path').first().text(),
@@ -75,14 +76,7 @@ router.get ( '/search', function (req, res) {
                 res.render('search', {title: 'Search', results: results, count: count, search: req.query.searchString});
             }
         });
-    } else {
-        res.render('search', {title: 'Search'});
-    }
-} );
-
-router.get ( '/searchQuery', function (req, res) {
-    var search = req.query.searchString;
-    if (search !== undefined) {
+    } else if (search !== undefined && search.split('')[0] == '/') {
         var query = tei +
             "for $n in (" + search + ")\n" +
             "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
@@ -224,7 +218,6 @@ router.get ( '*/displayXML', function (req, res) {
 } );
 
 router.post( '*/saveXML', function(req, res) {
-    //var query = "REPLACE " + req.originalUrl.replace('/displayXML', '') + " " + req.query.data;
     var path = req.originalUrl.replace('/Colenso/','').replace('/saveXML', '');
     var xml_data = req.body.xml_text;
     var query = "REPLACE "+path+" "+xml_data;
@@ -282,7 +275,6 @@ router.get ( '/downloadResults', function (req, res) {
         if ( error ) {
             console.error ( error );
         } else {
-            console.log(result.result);
             res.set('Content-Type', 'text/xml');
             res.send(result.result);
         }
