@@ -2,8 +2,13 @@ extends layout
 
 block content
     .container
-        p| Welcome to #{title}. We have an Excellent collection of videos in stock for you.
-         | We are based in !{place}.
+        img.center-block(src='/images/back_banner.jpg')
+        img.center-block(src='/images/rotate.jpg')
+    .container
+        div.padding-around
+            h2.toCenter.textGreen(style="margin-top: 30px")= 'Welcome'
+            h2.toCenter.textGreen(style="margin-top: -5px")= 'to'
+            h2.toCenter.textGreen(style="margin-top: -5px")= 'Colenso Project'
 
 
 
