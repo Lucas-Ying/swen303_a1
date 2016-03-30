@@ -10,6 +10,7 @@ block content
         if count > 0
             .margin-bot
                 span.label.label-primary #{count} found
+                a.btn.btn-default.btn-xml(href="/downloadResults?searchString=#{search}", download) Download results as an XML
 
             each result in results
                 .well.well-customize

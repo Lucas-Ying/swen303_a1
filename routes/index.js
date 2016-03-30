@@ -270,13 +270,15 @@ router.get ( '*/download', function (req, res) {
     } );
 } );
 
-router.get ( '/downloadSearchResults', function (req, res) {
-    var path = req.originalUrl.replace('/','').replace('/download', '');
-    var query = "XQUERY doc('"+ path + "')";
+router.get ( '/downloadResults', function (req, res) {
+    var query = tei +
+        "for $n in (//TEI[. contains text '" + req.query.searchString + "'])\n" +
+        "return doc(concat('Colenso/', db:path($n)))";
     client.execute ( query, function ( error, result ) {
         if ( error ) {
             console.error ( error );
         } else {
+            console.log(result.result);
             res.set('Content-Type', 'text/xml');
             res.send(result.result);
         }
