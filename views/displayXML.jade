@@ -16,6 +16,7 @@ block content
                     div.div-block-right
                         input.btn.btn-default.btn-xml(type='submit', value="Save")
                         a.btn.btn-default.btn-xml(href=url.replace('displayXML', 'download'), download) Download XML
+                        a.btn.btn-default.btn-xml(href=url.replace('displayXML', 'remove')) Remove
                 .display-title.padding-around= info.title
                 div.padding-around
                     textarea.form-control.textarea-xml(name="xml_text", rows="50", id="xml") #{letter}

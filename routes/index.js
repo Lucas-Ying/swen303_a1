@@ -54,7 +54,6 @@ router.get ( '/search', function (req, res) {
             .replace(" NOT ", "' ftnot '")
             .replace(" OR ", "' ftor '");
         search = "'" + search + "'";
-        console.log(search);
         var query = tei +
             "for $n in (//TEI[. contains text " + search + " using wildcards])\n" +
             "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
@@ -87,7 +86,6 @@ router.get ( '/searchQuery', function (req, res) {
         var query = tei +
             "for $n in (" + search + ")\n" +
             "return concat('<result><path>', db:path($n), '</path>\n <title>', $n//title, '</title>\n <size>', string-length($n), '</size></result>\n')";
-        console.log(query);
         client.execute(query, function (error, result) {
             if (error) {
                 console.error(error);
@@ -207,12 +205,10 @@ router.get ( '*/display', function (req, res) {
 router.get ( '*/displayXML', function (req, res) {
     var path = req.originalUrl.replace('/','').replace('/displayXML', '');
     var query = "XQUERY doc('"+ path + "')";
-    console.log("browse: " + path);
     client.execute ( query, function ( error, result ) {
         if ( error ) {
             console.error ( error );
         } else {
-            console.log(result.result);
             $ = cheerio.load(result.result, {xmlMode: true});
             var header = $('teiHeader');
             var info = {
@@ -236,16 +232,30 @@ router.post( '*/saveXML', function(req, res) {
         if (err) throw err;
         console.log('It\'s saved!');
     });
-    console.log("save: " + query);
     client.execute(query, function(error, result){
         if(error){
             console.error(error);
         } else {
             res.redirect("/Colenso/" + path + "/displayXML");
         }
-
     });
 });
+
+router.get("*/remove", function (req, res) {
+    var path = req.originalUrl.replace('/Colenso','').replace('/remove', '');
+    var query = "DELETE "+path;
+    fs.unlink("../Colenso/" + path, function(err){
+        if (err) throw err;
+        console.log('It\'s removed!');
+    });
+    client.execute(query, function (error, result) {
+        if(error){ console.error(error);}
+        else{
+            console.log("file was deleted");
+            res.redirect('/');
+        }
+    })
+})
 
 router.get ( '*/download', function (req, res) {
     var path = req.originalUrl.replace('/','').replace('/download', '');
@@ -254,7 +264,6 @@ router.get ( '*/download', function (req, res) {
         if ( error ) {
             console.error ( error );
         } else {
-            console.log(result.result);
             res.set('Content-Type', 'text/xml');
             res.send(result.result);
         }
@@ -268,7 +277,6 @@ router.get ( '/downloadSearchResults', function (req, res) {
         if ( error ) {
             console.error ( error );
         } else {
-            console.log(result.result);
             res.set('Content-Type', 'text/xml');
             res.send(result.result);
         }
@@ -276,12 +284,10 @@ router.get ( '/downloadSearchResults', function (req, res) {
 } );
 
 router.get ( '/upload', function (req, res) {
-    console.log('get');
     res.render('upload', { title: 'Upload', message: ""  });
 } );
 
 router.post('/upload', function(req, res){
-    console.log('upload');
     upload(req, res, function (err) {
         if (err) {
             // An error occurred when uploading
