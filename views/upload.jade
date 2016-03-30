@@ -15,11 +15,11 @@ block content
         if isSucceed
             h3.padding-around.toCenter.textBlue
                 span.glyphicon.glyphicon-ok(aria-hidden='true')
-                &nbsp;&nbsp
+                | &nbsp;&nbsp
                 | #{message}
         else if isErr
             h3.padding-around.toCenter.textRed
                 span.glyphicon.glyphicon-exclamation-sign(aria-hidden='true')
-                &nbsp;&nbsp
+                | &nbsp;&nbsp
                 | #{message}
         else

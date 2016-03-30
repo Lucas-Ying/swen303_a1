@@ -252,10 +252,14 @@ router.get("*/remove", function (req, res) {
         if(error){ console.error(error);}
         else{
             console.log("file was deleted");
-            res.redirect('/');
+            res.redirect('/removed');
         }
     })
-})
+});
+
+router.get("/removed", function (req, res) {
+    res.render ( 'remove' );
+});
 
 router.get ( '*/download', function (req, res) {
     var path = req.originalUrl.replace('/','').replace('/download', '');
