@@ -12,7 +12,7 @@ block content
     .container
         .display-title.padding-around= info.title
         p(style='padding: 0 15px')
-            +icon("pencil")
+            span.glyphicon.glyphicon-pencil(aria-hidden='true')
             a(href=info.author_url) !{info.author}
             | , !{info.date}
         div.padding-around

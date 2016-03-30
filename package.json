@@ -17,6 +17,7 @@
     "bootstrap": "",
     "basex": "",
     "eslint": "",
-    "cheerio": ""
+    "cheerio": "",
+    "multer": ""
   }
 }

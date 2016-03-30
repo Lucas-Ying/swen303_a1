@@ -3,16 +3,20 @@
 extends layout
 
 block content
-    .container.nav-customize
-        ul.nav.nav-tabs
-            li(role='presentation')
-                a(href=url.replace('displayXML', 'display')) Text
-            li.active(role='presentation')
-                a(href=url) XML
-            div.div-block
-                a.btn.btn-default.btn-xml(href=url.replace('displayXML', 'download')) Save
-                a.btn.btn-default.btn-xml(href=url.replace('displayXML', 'download'), download) Download XML
-    .container
-        .display-title.padding-around= info.title
-        div.padding-around
-            textarea.form-control.textarea-xml(rows="30", id="xml") #{letter}
+    if isSave
+        p saved
+    else
+        .container.nav-customize
+            form(action = url.replace('displayXML', 'saveXML'), method = "post")
+                ul.nav.nav-tabs
+                    li(role='presentation')
+                        a(href=url.replace('displayXML', 'display')) Text
+                    li.active(role='presentation')
+                        a(href=url) XML
+                    div.div-block-right
+                        input.btn.btn-default.btn-xml(type='submit', value="Save")
+                        a.btn.btn-default.btn-xml(href=url.replace('displayXML', 'download'), download) Download XML
+                .display-title.padding-around= info.title
+                div.padding-around
+                    textarea.form-control.textarea-xml(name="xml_text", rows="50", id="xml") #{letter}
+

@@ -1,2 +1,23 @@
 //Created by lucas on 30/03/16.
 
+extends layout
+
+block content
+
+    .container
+        form(action="/upload", method="post", enctype="multipart/form-data")
+            h2.padding-around.toCenter.textBlue= 'Upload'
+            div.toCenter
+                input.btn.btn-default.btn-xml.btn-upload(type="file", name="file")
+                button.btn.btn-default.btn-xml(action='submit', style = 'max-width: 100px') Upload
+        if isSucceed
+            h3.padding-around.toCenter.textBlue
+                span.glyphicon.glyphicon-ok(aria-hidden='true')
+                &nbsp;&nbsp
+                | #{message}
+        else if isErr
+            h3.padding-around.toCenter.textRed
+                span.glyphicon.glyphicon-exclamation-sign(aria-hidden='true')
+                &nbsp;&nbsp
+                | #{message}
+        else

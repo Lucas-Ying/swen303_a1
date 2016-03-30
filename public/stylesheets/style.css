@@ -52,9 +52,19 @@ a {
     border: 1px solid #e7e7e7;
 }
 
-.div-block {
+input[type=file].btn-upload {
+    display: inline;
+}
+
+.div-block-right {
     display: block;
     float: right!important;
+    margin-bottom: 10px;
+}
+
+
+.div-block {
+    display: block;
     margin-bottom: 10px;
 }
 
@@ -88,4 +98,18 @@ a {
 
 .padding-around {
     padding: 10px 15px;
+}
+
+.toCenter {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.textBlue {
+    color: #4f9fcf;
+}
+
+.textRed {
+    color: #d44950;
 }
