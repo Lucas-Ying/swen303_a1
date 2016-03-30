@@ -3,6 +3,17 @@
 extends layout
 
 block content
+    .container.nav-customize
+        ul.nav.nav-tabs
+            li.active(role='presentation')
+                a(href=url) Text
+            li(class="", role='presentation')
+                a(href=url+'XML') XML
     .container
-        +panel-info(info.title)
-            p !{letter}.
+        .display-title.padding-around= info.title
+        p(style='padding: 0 15px')
+            +icon("pencil")
+            a(href=info.author_url) !{info.author}
+            | , !{info.date}
+        div.padding-around
+            p !{letter}

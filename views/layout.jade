@@ -16,17 +16,25 @@ block body
             a.navbar-brand(href=href)= "Colenso"
         .collapse.navbar-collapse( id="dropdown_menu" )
             ul.nav.navbar-nav.navbar-left
-                +nav_item("/", "active") Home
-                +nav_item("/Colenso/browse", "active") Browse
-            form.navbar-form.navbar-right(action="/search", method="get")
+                li(id="home")
+                    a(href='/') Home
+                li(id="browse")
+                    a(href='/Colenso/browse') Browse
+            form.navbar-form.navbar-right(action="/search", method="get", id="searchForm")
                 .form-group
                     input.form-control(type='text', placeholder='Search', name='searchString')
-                button.btn.btn-default(type='submit') Submit
-    .container
-        h1= title
+                button.btn-navbar(type='submit', onclick="searchByText()") Search by Text
+                button.btn-navbar(type='submit', onclick="searchByQuery()") Search by xQuery
 
     block content
 
+script.
+    function searchByText() {
+        document.getElementById("searchForm").action = "/search";
+    }
 
+    function searchByQuery() {
+        document.getElementById("searchForm").action = "/searchQuery";
+    }
 
 // basex/bin/basexserver -d -c"CREATE DATABASE Colenso ./Colenso"

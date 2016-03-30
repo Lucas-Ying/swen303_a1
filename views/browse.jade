@@ -5,17 +5,19 @@ extends layout
 block content
     .container
         ol.breadcrumb
+            li.active Directory:
             -var directory = '';
             -for (var i = 0; i < original_dir.length; i++){
                 -directory = directory + original_dir[i] + '/';
                 li
                     a(href='/' + directory + 'browse') #{original_dir[i]}
             -}
-            li.active Directory
         if depth > 2 && count > 0
-            span.label.label-primary #{count} found
+            .margin-bot
+                span.label.label-primary #{count} found
+
             each result in results
-                p
+                .well.well-customize
                     a(href='/Colenso/' + result.path + '/display') #{result.title}
                     | (
                     -var size = result.size/1024
@@ -25,9 +27,11 @@ block content
                         -size = size/1024
                         | !{size.toFixed(2)} MB)
         else if depth > 0 && count > 0
-            span.label.label-primary #{count} found
+            .margin-bot
+                span.label.label-primary #{count} found
+
             each subdirectory in subdirectories
-                p
+                .well.well-customize
                     -var showing = subdirectory.split('/')[subdirectory.split('/').length - 1];
                     a(href='/Colenso/' + subdirectory + '/browse') #{showing}
         else
